@@ -1,0 +1,213 @@
+package DSA;
+import java.util.Scanner;
+
+class Song {
+    String title;
+    String artist;
+    int duration;
+
+    Song(String title, String artist, int duration) {
+        this.title = title;
+        this.artist = artist;
+        this.duration = duration;
+    }
+
+    public String toString() {
+        return title + " - " + artist + " (" + duration + " sec)";
+    }
+}
+
+class SongLibrary {
+
+    Song[] songs = new Song[50];
+    int count = 0;
+
+    void addSong(Song s) {
+        songs[count++] = s;
+    }
+
+    Song searchLinear(String title) {
+        for (int i = 0; i < count; i++) {
+            if (songs[i].title.equalsIgnoreCase(title)) {
+                return songs[i];
+            }
+        }
+        return null;
+    }
+
+    void bubbleSort() {
+        for (int i = 0; i < count - 1; i++) {
+            for (int j = 0; j < count - i - 1; j++) {
+                if (songs[j].title.compareToIgnoreCase(songs[j + 1].title) > 0) {
+                    Song tmp = songs[j];
+                    songs[j] = songs[j + 1];
+                    songs[j + 1] = tmp;
+                }
+            }
+        }
+    }
+
+    void displayLibrary() {
+        System.out.println("\n--- Song Library ---");
+        for (int i = 0; i < count; i++) {
+            System.out.println((i + 1) + ". " + songs[i]);
+        }
+    }
+}
+
+class Playlist {
+
+    class Node {
+        Song data;
+        Node next;
+        Node prev;
+
+        Node(Song s) {
+            data = s;
+        }
+    }
+
+    Node head;
+    Node current;
+
+    void addSong(Song s) {
+        Node n = new Node(s);
+
+        if (head == null) {
+            head = n;
+            current = n;
+            System.out.println("Song added to playlist.");
+            return;
+        }
+
+        Node temp = head;
+        while (temp.next != null) temp = temp.next;
+
+        temp.next = n;
+        n.prev = temp;
+        System.out.println("Song added to playlist.");
+    }
+
+    void displayPlaylist() {
+        System.out.println("\n--- Playlist ---");
+        Node t = head;
+        int i = 1;
+
+        while (t != null) {
+            System.out.println(i++ + ". " + t.data);
+            t = t.next;
+        }
+    }
+
+    void nextSong() {
+        if (current != null && current.next != null) {
+            current = current.next;
+            System.out.println("Now playing: " + current.data);
+        } else {
+            System.out.println("No next song.");
+        }
+    }
+
+    void previousSong() {
+        if (current != null && current.prev != null) {
+            current = current.prev;
+            System.out.println("Now playing: " + current.data);
+        } else {
+            System.out.println("No previous song.");
+        }
+    }
+
+    void playRecursively(Node node) {
+        if (node == null) return;
+        System.out.println("Playing: " + node.data);
+        playRecursively(node.next);
+    }
+
+    void playAllRecursive() {
+        playRecursively(head);
+    }
+}
+
+public class MusicPlaylistManager {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        SongLibrary library = new SongLibrary();
+        Playlist playlist = new Playlist();
+
+        library.addSong(new Song("Perfect", "Ed Sheeran", 240));
+        library.addSong(new Song("Believer", "Imagine Dragons", 210));
+        library.addSong(new Song("Shape of You", "Ed Sheeran", 235));
+
+        int choice;
+
+        do {
+            System.out.println("\n===== MUSIC PLAYLIST MANAGER =====");
+            System.out.println("1. View Song Library");
+            System.out.println("2. Search Song");
+            System.out.println("3. Sort Songs");
+            System.out.println("4. Add Song to Playlist");
+            System.out.println("5. View Playlist");
+            System.out.println("6. Play Next");
+            System.out.println("7. Play Previous");
+            System.out.println("8. Play All (Recursive)");
+            System.out.println("0. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    library.displayLibrary();
+                    break;
+
+                case 2:
+                    System.out.print("Enter title: ");
+                    String title = sc.nextLine();
+                    Song s = library.searchLinear(title);
+                    if (s != null) System.out.println("Found: " + s);
+                    else System.out.println("Song not found.");
+                    break;
+
+                case 3:
+                    library.bubbleSort();
+                    System.out.println("Songs sorted.");
+                    break;
+
+                case 4:
+                    System.out.print("Enter song title: ");
+                    String t = sc.nextLine();
+                    Song song = library.searchLinear(t);
+                    if (song != null) playlist.addSong(song);
+                    else System.out.println("Song not found in library.");
+                    break;
+
+                case 5:
+                    playlist.displayPlaylist();
+                    break;
+
+                case 6:
+                    playlist.nextSong();
+                    break;
+
+                case 7:
+                    playlist.previousSong();
+                    break;
+
+                case 8:
+                    playlist.playAllRecursive();
+                    break;
+
+                case 0:
+                    System.out.println("Goodbye.");
+                    break;
+
+                default:
+                    System.out.println("Invalid option.");
+            }
+
+        } while (choice != 0);
+    }
+}
